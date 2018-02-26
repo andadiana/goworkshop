@@ -24,12 +24,23 @@ func StartServer() {
 }
 
 func httpHandlerBooks(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Request method:", r.Method)
 	w.Header().Set("Content-Type", "application/json")
-	serializedData, err := json.Marshal(model.Books)
-	if err != nil {
-		panic(err)
+
+	switch r.Method {
+	case "GET":
+		serializedData, err := json.Marshal(model.Books)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Fprintln(w, string(serializedData))
+		break
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprintln(w, "Method not supported!")
+		break
 	}
-	fmt.Fprintln(w, string(serializedData))
+
 }
 
 func httpHandlerAuthors(w http.ResponseWriter, r *http.Request) {
