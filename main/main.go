@@ -1,7 +1,13 @@
 package main
 
 import "goworkshop/test"
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"encoding/json"
+	"goworkshop/model"
+	"goworkshop/web"
+)
 
 func main() {
 	fmt.Println("hello world!")
@@ -22,9 +28,57 @@ func main() {
 	var s = test.CreateSquare(10)
 	fmt.Println(s.Area())
 
-	var book = BookDto{
-		Title: "A Clockwork Orange",
-	}
-	fmt.Println(book)
 
+	//import books
+	booksFileContent, err := ioutil.ReadFile("model/books.json")
+	if err != nil {
+		//fmt.Println("Error occurred")
+		//os.Exit(1)
+		//this is equivalent to:
+		panic(err)
+	}
+
+	//fmt.Println(string(fileContent))
+
+	if err = json.Unmarshal(booksFileContent, &model.Books); err != nil {
+		panic(err)
+	}
+
+	fmt.Println("The deserialized data:")
+	fmt.Println(model.Books)
+
+	serializedData, err := json.Marshal(model.Books)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("The serialized data is:")
+	fmt.Println(string(serializedData))
+
+
+	//import authors
+	authorsFileContent, err := ioutil.ReadFile("model/authors.json")
+	if err != nil {
+		//fmt.Println("Error occurred")
+		//os.Exit(1)
+		//this is equivalent to:
+		panic(err)
+	}
+
+	//fmt.Println(string(fileContent))
+
+	if err = json.Unmarshal(authorsFileContent, &model.Authors); err != nil {
+		panic(err)
+	}
+
+	fmt.Println("The deserialized data:")
+	fmt.Println(model.Authors)
+
+	serializedData, err = json.Marshal(model.Authors)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("The serialized data is:")
+	fmt.Println(string(serializedData))
+
+	web.StartServer()
 }
