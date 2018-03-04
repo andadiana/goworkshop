@@ -3,7 +3,7 @@ package model
 import "fmt"
 
 //Authors - the list of available authors
-var Authors []AuthorDto
+var Authors AuthorList
 
 type AuthorDto struct {
 	UUID      string `json:"uuid"`

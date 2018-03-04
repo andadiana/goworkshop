@@ -3,7 +3,7 @@ package model
 import "fmt"
 
 //Books - the list of available books
-var Books []BookDto
+var Books BookList
 
 type BookDto struct {
 	UUID        string `json:"uuid"`
