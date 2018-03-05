@@ -40,9 +40,9 @@ func StartServer() {
 }
 
 func log(funcHandler http.HandlerFunc) http.HandlerFunc{
-	return func (rw http.ResponseWriter, r *http.Request) {
-		fmt.Println("New REST request to URL: " + r.URL.Path)
+	return func (rw http.ResponseWriter, r *http.Request){
+		fmt.Println("New REST request to url: "+r.URL.Path)
 		funcHandler(rw, r)
-		fmt.Println("REST request ended")
+		fmt.Println("Rest request ended")
 	}
 }
