@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"github.com/gorilla/mux"
+	"fmt"
 )
 
 const API_PORT_NAME = "API_PORT"
@@ -25,13 +26,23 @@ func StartServer() {
 
 	//setting the endpoints
 	for _, route := range routes {
-		router.HandleFunc(route.Pattern, route.HandlerFunc).Methods(route.Method)
+		handlerFunc := log(route.HandlerFunc)
+		router.HandleFunc(route.Pattern, handlerFunc).Methods(route.Method)
 	}
 
 	port := getPort()
+	fmt.Println("+-------------------------------+")
+	fmt.Printf("| Starting sever on port: %s\t|\n", port)
+	fmt.Println("+-------------------------------+")
 	if err := http.ListenAndServe(":" + port, router); err != nil {
 		panic(err)
 	}
 }
 
-//TODO: Methods for author: GET, POST, DELETE, etc.
+func log(funcHandler http.HandlerFunc) http.HandlerFunc{
+	return func (rw http.ResponseWriter, r *http.Request) {
+		fmt.Println("New REST request to URL: " + r.URL.Path)
+		funcHandler(rw, r)
+		fmt.Println("REST request ended")
+	}
+}
