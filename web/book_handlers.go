@@ -3,8 +3,8 @@ package web
 import (
 	"net/http"
 	"goworkshop/model"
-	"encoding/json"
 	"io/ioutil"
+	"encoding/json"
 	"goworkshop/persistence"
 )
 
@@ -23,7 +23,7 @@ func Index(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func GetAllBooks(w http.ResponseWriter, r *http.Request) error {
+func GetAllBooks(w http.ResponseWriter, _ *http.Request) error {
 	books, err := persistence.Store.GetBooks()
 	if err != nil {
 		return err
@@ -32,13 +32,22 @@ func GetAllBooks(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-
 func GetBookByUUID(w http.ResponseWriter, r *http.Request) error {
 	bookUUID := ExtractUuid(r)
 	if book, err := persistence.Store.GetBook(bookUUID); err != nil {
 		return err
 	} else {
 		WriteJson(w, book)
+		return nil
+	}
+}
+
+func DeleteBookByUUID(w http.ResponseWriter, r *http.Request) error {
+	bookUUID := ExtractUuid(r)
+	if err := persistence.Store.DeleteBook(bookUUID); err != nil {
+		return err
+	} else {
+		WriteJson(w, struct{ Message string }{Message: "Deleted"})
 		return nil
 	}
 }
@@ -76,14 +85,4 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) error {
 		WriteJson(w, book)
 	}
 	return nil
-}
-
-func DeleteBookByUUID(w http.ResponseWriter, r *http.Request) error {
-	bookUUID := ExtractUuid(r)
-	if err := persistence.Store.DeleteBook(bookUUID); err != nil {
-		return err
-	} else {
-		WriteJson(w, struct{ Message string }{Message: "Deleted"})
-		return nil
-	}
 }

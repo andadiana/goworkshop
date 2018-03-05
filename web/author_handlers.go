@@ -3,12 +3,12 @@ package web
 import (
 	"net/http"
 	"goworkshop/model"
-	"encoding/json"
 	"io/ioutil"
+	"encoding/json"
 	"goworkshop/persistence"
 )
 
-func GetAllAuthors(w http.ResponseWriter, r *http.Request) error {
+func GetAllAuthors(w http.ResponseWriter, _ *http.Request) error {
 	authors, err := persistence.Store.GetAuthors()
 	if err != nil {
 		return err
@@ -23,6 +23,16 @@ func GetAuthorByUUID(w http.ResponseWriter, r *http.Request) error {
 		return err
 	} else {
 		WriteJson(w, author)
+		return nil
+	}
+}
+
+func DeleteAuthorByUUID(w http.ResponseWriter, r *http.Request) error {
+	authorUUID := ExtractUuid(r)
+	if err := persistence.Store.DeleteAuthor(authorUUID); err != nil {
+		return err
+	} else {
+		WriteJson(w, struct{ Message string }{Message: "Deleted"})
 		return nil
 	}
 }
@@ -42,6 +52,7 @@ func AddAuthor(w http.ResponseWriter, r *http.Request) error {
 		WriteJson(w, author)
 		return nil
 	}
+
 }
 
 func UpdateAuthor(w http.ResponseWriter, r *http.Request) error {
@@ -61,14 +72,4 @@ func UpdateAuthor(w http.ResponseWriter, r *http.Request) error {
 		WriteJson(w, author)
 	}
 	return nil
-}
-
-func DeleteAuthorByUUID(w http.ResponseWriter, r *http.Request) error{
-	authorUUID := ExtractUuid(r)
-	if err := persistence.Store.DeleteAuthor(authorUUID); err != nil {
-		return err
-	} else {
-		WriteJson(w, struct{ Message string }{Message: "Deleted"})
-		return nil
-	}
 }

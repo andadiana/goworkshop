@@ -1,7 +1,9 @@
 package persistence
 
-import "goworkshop/model"
-import "errors"
+import (
+	"errors"
+	"goworkshop/model"
+)
 
 func (store *GormDataStore) GetAuthor(uuid string) (model.Author, error) {
 	var author model.Author
@@ -10,7 +12,7 @@ func (store *GormDataStore) GetAuthor(uuid string) (model.Author, error) {
 }
 
 func (store *GormDataStore) CreateAuthor(author *model.Author) error {
-	//check if UUID is empty and generate it if needed
+	//check if the uuid is empty and generate it if necessary
 	if err := author.CheckUuid(); err != nil{
 		return err
 	}
@@ -19,7 +21,9 @@ func (store *GormDataStore) CreateAuthor(author *model.Author) error {
 
 func (store *GormDataStore) GetAuthors() ([]model.Author, error) {
 	var authors []model.Author
-	err := store.DBInstance.Find(&authors).Error
+	err := store.DBInstance.
+	//fetch the author
+		Find(&authors).Error
 	return authors, err
 }
 
@@ -27,7 +31,8 @@ func (store *GormDataStore) DeleteAuthor(uuid string) error {
 	if isEmptyUUID(uuid) {
 		return errors.New("Please supply a primary key when attempting to delete an object.")
 	}
-	db := store.DBInstance.Delete(model.Author{}, whereAuthorUUIDEquals(uuid))
+	db := store.DBInstance.
+		Delete(model.Author{}, whereAuthorUUIDEquals(uuid))
 
 	if db.Error != nil {
 		return db.Error

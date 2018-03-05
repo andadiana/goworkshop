@@ -5,11 +5,11 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-
 type Entity struct {
 	Id   int    `json:"-" gorm:"primary_key"`
 	UUID string `json:"uuid"`
 }
+
 
 func (entity *Entity) CheckUuid() error {
 	if len(entity.UUID) == 0 {
@@ -22,10 +22,7 @@ func (entity *Entity) CheckUuid() error {
 	return nil
 }
 
-
-//Authors - the list of available authors
-var Authors AuthorList
-
+//Author - The DTO used to access authors
 type Author struct {
 	Entity
 	FirstName string `json:"firstName"`
@@ -34,30 +31,34 @@ type Author struct {
 	Death     string `json:"death"`
 }
 
-type AuthorList []Author
-
-func (a Author) String() string {
-	return fmt.Sprintf("AuthorDto{UUID=%s, FirstName=%s, LastName=%s, Birthday=%s, Death=%s}",
-		a.UUID, a.FirstName, a.LastName, a.Birthday, a.Death)
+func (author Author) String() string {
+	return fmt.Sprintf("Author{UUID='%s', FirstName='%s', LastName='%s', Birthday='%s', Death='%s'}", author.UUID,
+		author.FirstName, author.LastName, author.Birthday, author.Death)
 }
 
-func (a *AuthorList) Get(authorUUID string) (Author, error) {
-	err := fmt.Errorf("Could not find author by UUID %s", authorUUID)
+type AuthorsList []Author
+
+//deletes the given author from the list
+func (a *AuthorsList) Delete(authorUUID string) error {
+	var err = fmt.Errorf("could not find author by uuid %s", authorUUID)
+	var updatedAuthors AuthorsList
 	for _, author := range *a {
-		if author.UUID == authorUUID{
-			return author, nil
+		if author.UUID == authorUUID {
+			err = nil
+		} else {
+			updatedAuthors = append(updatedAuthors, author)
 		}
 	}
-	return Author{}, err
+	if err == nil {
+		*a = updatedAuthors
+	}
+	return err
 }
 
-func (a *AuthorList) Add(author Author) {
-	*a = append(*a, author)
-}
-
-func (a *AuthorList) Update(updatedAuthor Author) (Author, error) {
-	err := fmt.Errorf("Could not find author by UUID %s", updatedAuthor.UUID)
-	var newAuthors AuthorList
+//updates the given author
+func (a *AuthorsList) Update(updatedAuthor Author) (Author, error) {
+	var err = fmt.Errorf("could not find author by uuid %s", updatedAuthor.UUID)
+	var newAuthors AuthorsList
 	for _, author := range *a {
 		if author.UUID == updatedAuthor.UUID {
 			newAuthors = append(newAuthors, updatedAuthor)
@@ -72,18 +73,18 @@ func (a *AuthorList) Update(updatedAuthor Author) (Author, error) {
 	return updatedAuthor, err
 }
 
-func (a *AuthorList) Delete(authorUUID string) error {
-	err := fmt.Errorf("Could not find author by UUID %s", authorUUID)
-	var updatedAuthors AuthorList
+//searches for the author with the given uuid
+func (a *AuthorsList) Get(authorUUID string) (Author, error) {
+	err := fmt.Errorf("could not find author by uuid %s", authorUUID)
 	for _, author := range *a {
 		if author.UUID == authorUUID {
-			err = nil
-		} else {
-			updatedAuthors = append(updatedAuthors, author)
+			return author, nil
 		}
 	}
-	if err == nil {
-		*a = updatedAuthors
-	}
-	return err
+	return Author{}, err
+}
+
+//Adds the given author into the list
+func (a *AuthorsList) Add(author Author) {
+	*a = append(*a, author)
 }

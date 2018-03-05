@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"testing"
+	"goworkshop/model"
 )
 
 func TestMaps(t *testing.T) {
@@ -40,4 +41,12 @@ func TestMaps(t *testing.T) {
 	delete(ages, "bob") // remove element ages["bob"]
 	fmt.Printf("7. ages = %v\n", ages)
 
+	authorsMap := make(map[string]model.Author)
+	authorsMap["1"] = model.Author{
+		UUID: "1",
+	}
+
+	if authorsMap["2"] == (model.Author{}){
+		fmt.Println("There is no author with uuid 2")
+	}
 }

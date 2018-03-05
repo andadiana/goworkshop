@@ -3,8 +3,8 @@ package web
 import "net/http"
 
 const (
-	authorsBaseUrl   = "/authors"
-	authorByUuidUrl = authorsBaseUrl + "/{uuid}"
+	authorBaseUrl   = "/authors"
+	authorByUuidUrl = authorBaseUrl + "/{uuid}"
 	booksBaseUrl    = "/books"
 	bookByUuidUrl   = booksBaseUrl + "/{uuid}"
 )
@@ -61,12 +61,12 @@ func (server *RestServer) initRoutes(){
 		//author_handlers
 		Route{
 			Method:      "GET",
-			Pattern:     authorsBaseUrl,
+			Pattern:     authorBaseUrl,
 			HandlerFunc: GetAllAuthors,
 		},
 		Route{
 			Method:      "POST",
-			Pattern:     authorsBaseUrl,
+			Pattern:     authorBaseUrl,
 			HandlerFunc: AddAuthor,
 		},
 		Route{
@@ -86,3 +86,4 @@ func (server *RestServer) initRoutes(){
 		},
 	}
 }
+

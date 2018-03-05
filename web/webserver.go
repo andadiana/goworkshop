@@ -2,15 +2,11 @@ package web
 
 import (
 	"net/http"
-	"os"
 	"github.com/gorilla/mux"
 	"fmt"
-	"goworkshop/persistence"
 	"time"
+	"goworkshop/persistence"
 )
-
-const API_PORT_NAME = "API_PORT"
-const API_PORT_VALUE = "8000"
 
 type RestServer struct {
 	Port   int
@@ -19,26 +15,14 @@ type RestServer struct {
 	Store persistence.DataStore
 }
 
-func getPort() string {
-	port := os.Getenv(API_PORT_NAME)
-	if port != "" {
-		return port
-	} else {
-		return API_PORT_VALUE
-	}
-}
-
 func (server *RestServer) StartServer() {
 	server.initRoutes()
 	server.router = mux.NewRouter()
-
-	//setting the endpoints
 	for _, route := range server.routes {
 		server.router.Handle(route.Pattern, log(route.HandlerFunc)).Methods(route.Method)
 	}
-	fmt.Println("+-------------------------------+")
-	fmt.Printf("| Starting sever on port: %d\t|\n", server.Port)
-	fmt.Println("+-------------------------------+")
+
+	fmt.Printf("Starting server on port: %d", server.Port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", server.Port), server.router); err != nil {
 		panic(err)
 	}
