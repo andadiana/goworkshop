@@ -1,40 +1,61 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/satori/go.uuid"
+)
+
+
+type Entity struct {
+	Id   int    `json:"-" gorm:"primary_key"`
+	UUID string `json:"uuid"`
+}
+
+func (entity *Entity) CheckUuid() error {
+	if len(entity.UUID) == 0 {
+		generatedUuid, err := uuid.NewV4()
+		if err != nil {
+			return err
+		}
+		entity.UUID = generatedUuid.String()
+	}
+	return nil
+}
+
 
 //Authors - the list of available authors
 var Authors AuthorList
 
-type AuthorDto struct {
-	UUID      string `json:"uuid"`
+type Author struct {
+	Entity
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Birthday  string `json:"birthday"`
 	Death     string `json:"death"`
 }
 
-type AuthorList []AuthorDto
+type AuthorList []Author
 
-func (a AuthorDto) String() string {
+func (a Author) String() string {
 	return fmt.Sprintf("AuthorDto{UUID=%s, FirstName=%s, LastName=%s, Birthday=%s, Death=%s}",
 		a.UUID, a.FirstName, a.LastName, a.Birthday, a.Death)
 }
 
-func (a *AuthorList) Get(authorUUID string) (AuthorDto, error) {
+func (a *AuthorList) Get(authorUUID string) (Author, error) {
 	err := fmt.Errorf("Could not find author by UUID %s", authorUUID)
 	for _, author := range *a {
 		if author.UUID == authorUUID{
 			return author, nil
 		}
 	}
-	return AuthorDto{}, err
+	return Author{}, err
 }
 
-func (a *AuthorList) Add(author AuthorDto) {
+func (a *AuthorList) Add(author Author) {
 	*a = append(*a, author)
 }
 
-func (a *AuthorList) Update(updatedAuthor AuthorDto) (AuthorDto, error) {
+func (a *AuthorList) Update(updatedAuthor Author) (Author, error) {
 	err := fmt.Errorf("Could not find author by UUID %s", updatedAuthor.UUID)
 	var newAuthors AuthorList
 	for _, author := range *a {

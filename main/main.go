@@ -1,19 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"goworkshop/model"
 	"goworkshop/web"
 	"goworkshop/persistence"
-	"goworkshop/importer"
 )
 
 func main() {
+	if err := persistence.InitDB(); err != nil {
+		panic(err)
+	}
 
-	persistence.InitDB()
-	model.Authors = importer.ImportAuthors()
-	fmt.Printf("Imported authors are: %s\n", model.Authors)
-	model.Books = importer.ImportBooks()
-	fmt.Printf("Imported books are: %s\n", model.Books)
-	web.StartServer()
+	server := web.RestServer{
+		Port: 8080,
+	}
+
+	server.StartServer()
 }
